@@ -1,7 +1,6 @@
 const express = require('express');
 const glob = require('glob');
 
-const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -15,14 +14,13 @@ module.exports = (app, config) => {
   app.locals.ENV_DEVELOPMENT = env == 'development';
   
   app.engine('handlebars', exphbs({
-    layoutsDir: config.root + '/app/views/layouts/',
+    layoutsDir: config.root + '/build/views/layouts/',
     defaultLayout: 'main',
     partialsDir: [config.root + '/app/views/partials/']
   }));
   app.set('views', config.root + '/app/views');
   app.set('view engine', 'handlebars');
 
-  // app.use(favicon(config.root + '/public/img/favicon.ico'));
   app.use(logger('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({
@@ -30,7 +28,7 @@ module.exports = (app, config) => {
   }));
   app.use(cookieParser());
   app.use(compress());
-  app.use(express.static(config.root + '/public'));
+  app.use('/build', express.static(config.root + '/build'));
   app.use(methodOverride());
 
   var controllers = glob.sync(config.root + '/app/controllers/*.js');
