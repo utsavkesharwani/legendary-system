@@ -48,21 +48,19 @@ function scripts() {
   return gulp.src(paths.scripts.src, { sourcemaps: true, allowEmpty: true })
     .pipe(uglify())
     .pipe(concat('main.min.js'))
-    .pipe(gulp.dest(paths.scripts.dest))
-    .pipe(livereload());
+    .pipe(gulp.dest(paths.scripts.dest));
 }
 
 function views() {
   return gulp.src(paths.views.src)
     .pipe(htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest(paths.views.dest))
-    .pipe(livereload());
+    .pipe(gulp.dest(paths.views.dest));
 }
 
 function watch() {
   gulp.watch(paths.scripts.src, scripts);
   gulp.watch(paths.styles.src, styles);
-  gulp.watch(paths.views.src, index);
+  gulp.watch(paths.views.src, gulp.series(views, index));
 }
 
 function develop() {
@@ -115,6 +113,9 @@ exports.index = index;
 exports.vendors = vendors;
 exports.views = views;
 
-var build = gulp.series(clean, styles, scripts, views, vendors, index, gulp.parallel(develop, watch));
+var run = gulp.series(clean, styles, scripts, views, vendors, index, gulp.parallel(develop, watch));
+var build = gulp.series(clean, styles, scripts, views, vendors, index);
 
-gulp.task('default', build);
+gulp.task('default', run);
+gulp.task('run', run);
+gulp.task('build', build);
