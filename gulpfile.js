@@ -27,7 +27,7 @@ var paths = {
 };
 
 function clean() {
-  return del([ 
+  return del([
     './build/'
   ]);
 }
@@ -48,13 +48,15 @@ function scripts() {
   return gulp.src(paths.scripts.src, { sourcemaps: true, allowEmpty: true })
     .pipe(uglify())
     .pipe(concat('main.min.js'))
-    .pipe(gulp.dest(paths.scripts.dest));
+    .pipe(gulp.dest(paths.scripts.dest))
+    .pipe(livereload());
 }
 
 function views() {
   return gulp.src(paths.views.src)
     .pipe(htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest(paths.views.dest));
+    .pipe(gulp.dest(paths.views.dest))
+    .pipe(livereload());
 }
 
 function watch() {
@@ -87,8 +89,9 @@ function vendors() {
   ])
   .pipe(concat('vendor.min.js'))
   .pipe(gulp.dest('./build/public/js/'))
-  
+
   return gulp.src([
+    './node_modules/reset-css/reset.css',
     './node_modules/bootstrap/dist/css/bootstrap.min.css'
   ])
   .pipe(concat('vendor.min.css'))
