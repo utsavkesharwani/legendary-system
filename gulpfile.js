@@ -27,7 +27,7 @@ var paths = {
 };
 
 function clean() {
-  return del([ 
+  return del([
     './build/'
   ]);
 }
@@ -60,7 +60,7 @@ function views() {
 function watch() {
   gulp.watch(paths.scripts.src, scripts);
   gulp.watch(paths.styles.src, styles);
-  gulp.watch(paths.views.src, index);
+  gulp.watch(paths.views.src, gulp.series(views, index));
 }
 
 function develop() {
@@ -87,8 +87,9 @@ function vendors() {
   ])
   .pipe(concat('vendor.min.js'))
   .pipe(gulp.dest('./build/public/js/'))
-  
+
   return gulp.src([
+    './node_modules/reset-css/reset.css',
     './node_modules/bootstrap/dist/css/bootstrap.min.css'
   ])
   .pipe(concat('vendor.min.css'))
@@ -112,6 +113,9 @@ exports.index = index;
 exports.vendors = vendors;
 exports.views = views;
 
-var build = gulp.series(clean, styles, scripts, views, vendors, index, gulp.parallel(develop, watch));
+var run = gulp.series(clean, styles, scripts, views, vendors, index, gulp.parallel(develop, watch));
+var build = gulp.series(clean, styles, scripts, views, vendors, index);
 
-gulp.task('default', build);
+gulp.task('default', run);
+gulp.task('run', run);
+gulp.task('build', build);
